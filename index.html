@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MINICRAFT - 3D Voxel Survival</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <!-- MINI COMPANY Red Startup Splash Screen -->
+    <div id="mini-company-splash" class="splash-screen active">
+      <div class="splash-content">
+        <div class="mini-company-logo">
+          <div class="mini-company-title">MINI COMPANY</div>
+        </div>
+        <div class="splash-subtitle">S T U D I O</div>
+      </div>
+      <div class="splash-skip-hint">Click anywhere to skip</div>
+    </div>
+
+    <!-- Game Canvas -->
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Hurt Flash Overlay -->
+    <div id="hurt-overlay"></div>
+
+    <!-- In-Game UI Overlay -->
+    <div id="ui-container">
+      <!-- Classic Pixel Crosshair & Mining Progress -->
+      <div id="crosshair-wrapper">
+        <div id="crosshair">
+          <div class="ch-center"></div>
+          <div class="ch-line ch-top"></div>
+          <div class="ch-line ch-bottom"></div>
+          <div class="ch-line ch-left"></div>
+          <div class="ch-line ch-right"></div>
+        </div>
+        <!-- Mining Progress Bar -->
+        <div id="mining-progress-container">
+          <div id="mining-progress-bar"></div>
+        </div>
+      </div>
+
+      <!-- In-World Farming / Block Interaction Tooltip -->
+      <div id="farming-tooltip" class="pixel-farming-tooltip" style="display: none;"></div>
+
+      <!-- F3 Developer Telemetry Panel -->
+      <div id="debug-panel" class="pixel-debug-panel" style="display: none;"></div>
+
+      <!-- Classic Survival HUD (Hearts, Hunger, XP, Hotbar) -->
+      <div id="survival-hud">
+        <!-- Vitals Container: 10 Hearts & 10 Hunger Units -->
+        <div id="hud-vitals-container">
+          <div id="hud-hearts-container" class="vitals-row hearts-row" title="Health"></div>
+          <div id="hud-hunger-container" class="vitals-row hunger-row" title="Hunger"></div>
+        </div>
+
+        <!-- Thin Pixel XP / Progression Bar -->
+        <div id="hud-xp-container">
+          <div class="hud-xp-track">
+            <div id="hud-xp-fill" class="hud-xp-fill" style="width: 100%;"></div>
+          </div>
+        </div>
+
+        <!-- Hotbar HUD: 9 Square Pixel Slots -->
+        <div id="hotbar-container">
+          <div id="hotbar" class="hotbar-slots-grid"></div>
+        </div>
+      </div>
+
+      <!-- Pixel Toast Notification -->
+      <div id="toast" class="pixel-toast"></div>
+
+      <!-- Survival Inventory Modal (E Key) -->
+      <div id="inventory-modal" class="modal-overlay">
+        <div class="pixel-dialog inventory-dialog">
+          <div class="pixel-dialog-header">
+            <span class="pixel-dialog-title">INVENTORY</span>
+            <div class="dialog-header-actions">
+              <button id="btn-open-crafting" class="pixel-btn pixel-btn-small" title="Open Full Recipe Book">RECIPES</button>
+              <button id="btn-close-inventory" class="pixel-btn-close">&times;</button>
+            </div>
+          </div>
+
+          <div class="inv-top-row">
+            <!-- 4 Armor Slots -->
+            <div class="armor-column">
+              <div class="armor-column-header">
+                <span>ARMOR</span>
+                <span id="total-defense-badge" class="defense-badge">+0</span>
+              </div>
+              <div class="armor-slots-list">
+                <div class="pixel-slot armor-slot" id="equip-slot-head" data-slot="head" title="Head Armor"></div>
+                <div class="pixel-slot armor-slot" id="equip-slot-chest" data-slot="chest" title="Chest Armor"></div>
+                <div class="pixel-slot armor-slot" id="equip-slot-legs" data-slot="legs" title="Leg Armor"></div>
+                <div class="pixel-slot armor-slot" id="equip-slot-feet" data-slot="feet" title="Foot Armor"></div>
+              </div>
+            </div>
+
+            <!-- 3D Player Character Preview Box -->
+            <div class="player-preview-container">
+              <div class="player-preview-inner">
+                <canvas id="player-preview-canvas" width="140" height="200"></canvas>
+              </div>
+              <div class="player-preview-label">PLAYER</div>
+            </div>
+
+            <!-- 2x2 Field Crafting Box -->
+            <div class="field-crafting-container">
+              <div class="field-crafting-header">CRAFTING</div>
+              <div class="field-crafting-body">
+                <div class="field-crafting-grid" id="field-craft-grid">
+                  <div class="pixel-slot craft-in-slot" data-craft-idx="0"></div>
+                  <div class="pixel-slot craft-in-slot" data-craft-idx="1"></div>
+                  <div class="pixel-slot craft-in-slot" data-craft-idx="2"></div>
+                  <div class="pixel-slot craft-in-slot" data-craft-idx="3"></div>
+                </div>
+                <div class="crafting-arrow-box">
+                  <div class="pixel-craft-arrow">➔</div>
+                </div>
+                <div class="field-crafting-output">
+                  <div class="pixel-slot craft-out-slot" id="field-craft-output" title="Crafted Output"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Middle: 9x3 Backpack (Slots 9 to 35 = 27 slots) -->
+          <div class="inv-section-title">BACKPACK (27 SLOTS)</div>
+          <div id="inventory-backpack-grid" class="pixel-slots-grid grid-9x3"></div>
+
+          <!-- Bottom: 9x1 Hotbar (Slots 0 to 8 = 9 slots) -->
+          <div class="inv-section-title hotbar-title">HOTBAR (SLOTS 1 - 9)</div>
+          <div id="inventory-hotbar-grid" class="pixel-slots-grid grid-9x1"></div>
+
+          <div class="pixel-dialog-footer">
+            <span>LMB: Pick/Place • RMB: Split/1 • Shift+Click: Fast Move • <kbd>E</kbd>/<kbd>Esc</kbd>: Close</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Workbench Crafting Modal (C Key or Crafting Bench) -->
+      <div id="crafting-modal" class="modal-overlay">
+        <div class="pixel-dialog crafting-dialog">
+          <div class="pixel-dialog-header">
+            <span class="pixel-dialog-title" id="crafting-modal-title">WORKBENCH CRAFTING</span>
+            <button id="btn-close-crafting" class="pixel-btn-close">&times;</button>
+          </div>
+          <div class="crafting-workbench-banner" id="crafting-bench-banner">
+            WORKBENCH ACTIVE: ADVANCED RECIPES UNLOCKED
+          </div>
+          <div class="crafting-category-tabs">
+            <button class="pixel-tab active" data-category="ALL">ALL</button>
+            <button class="pixel-tab" data-category="TOOL">TOOLS</button>
+            <button class="pixel-tab" data-category="WEAPON">WEAPONS</button>
+            <button class="pixel-tab" data-category="ARMOR">ARMOR</button>
+            <button class="pixel-tab" data-category="BLOCK">BLOCKS</button>
+            <button class="pixel-tab" data-category="FOOD">FOOD</button>
+          </div>
+          <div id="recipe-list-container" class="recipe-list-container"></div>
+          <div class="pixel-dialog-footer">
+            <span>Place a Crafting Bench in world and right-click it for advanced recipes.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Smelter Modal (Right-click Charcoal Smelter) -->
+      <div id="smelter-modal" class="modal-overlay">
+        <div class="pixel-dialog smelter-dialog">
+          <div class="pixel-dialog-header">
+            <span class="pixel-dialog-title">CHARCOAL SMELTER</span>
+            <button id="btn-close-smelter" class="pixel-btn-close">&times;</button>
+          </div>
+          <div class="smelter-furnace-body">
+            <div class="smelter-inputs-col">
+              <div class="smelter-slot-label">INPUT</div>
+              <div class="pixel-slot smelter-slot" id="smelter-slot-input" title="Raw Ores, Meats">
+                <span class="slot-placeholder">Ore / Meat</span>
+              </div>
+              <div class="smelter-flame-indicator" id="smelter-flame-gauge">
+                <canvas id="smelter-flame-canvas" width="24" height="24" class="pixel-flame-canvas"></canvas>
+                <div class="pixel-flame-track">
+                  <div class="pixel-flame-fill" id="smelter-flame-fill" style="height: 0%;"></div>
+                </div>
+              </div>
+              <div class="smelter-slot-label">FUEL</div>
+              <div class="pixel-slot smelter-slot" id="smelter-slot-fuel" title="Coal, Wood, Planks">
+                <span class="slot-placeholder">Coal / Wood</span>
+              </div>
+            </div>
+
+            <div class="smelter-arrow-col">
+              <div class="pixel-smelt-arrow">➔</div>
+              <div class="pixel-progress-track">
+                <div class="pixel-progress-fill" id="smelter-cook-fill" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <div class="smelter-outputs-col">
+              <div class="smelter-slot-label">OUTPUT</div>
+              <div class="pixel-slot smelter-slot output-slot" id="smelter-slot-output" title="Smelted Output">
+                <span class="slot-placeholder">Output</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="inv-section-title">BACKPACK STORAGE</div>
+          <div id="smelter-player-backpack-grid" class="pixel-slots-grid grid-9x3"></div>
+          <div class="inv-section-title hotbar-title">ACTIVE HOTBAR</div>
+          <div id="smelter-player-hotbar-grid" class="pixel-slots-grid grid-9x1"></div>
+
+          <div class="pixel-dialog-footer">
+            <span>Smelts raw ores into ingots and roasts raw meat into savory steaks.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Storage Chest Modal (Right-click Chest) -->
+      <div id="chest-modal" class="modal-overlay">
+        <div class="pixel-dialog chest-dialog">
+          <div class="pixel-dialog-header">
+            <span class="pixel-dialog-title">STORAGE CHEST (27 SLOTS)</span>
+            <button id="btn-close-chest" class="pixel-btn-close">&times;</button>
+          </div>
+          <div class="inv-section-title">CHEST STORAGE</div>
+          <div id="chest-grid" class="pixel-slots-grid grid-9x3"></div>
+
+          <div class="inv-section-title">BACKPACK STORAGE</div>
+          <div id="chest-player-backpack-grid" class="pixel-slots-grid grid-9x3"></div>
+          <div class="inv-section-title hotbar-title">ACTIVE HOTBAR</div>
+          <div id="chest-player-hotbar-grid" class="pixel-slots-grid grid-9x1"></div>
+
+          <div class="pixel-dialog-footer">
+            <span>Click or Shift-Click items in either container to transfer. Items persist in world save.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Floating Cursor Held Item Stack -->
+      <div id="cursor-item-float" class="cursor-item-float" style="display: none;">
+        <img id="cursor-item-icon" class="cursor-item-img" alt="" />
+        <span id="cursor-item-count" class="cursor-item-count"></span>
+      </div>
+
+      <!-- Pixel Item Hover Tooltip -->
+      <div id="pixel-tooltip" class="pixel-tooltip" style="display: none;">
+        <div class="tooltip-header" id="tooltip-title">Item Name</div>
+        <div class="tooltip-meta">
+          <span class="tooltip-category" id="tooltip-category">CATEGORY</span>
+          <span class="tooltip-tier" id="tooltip-tier"></span>
+        </div>
+        <div class="tooltip-stats" id="tooltip-stats"></div>
+        <div class="tooltip-durability" id="tooltip-durability">
+          <div class="durability-label">Durability: <span id="tooltip-dur-text">100/100</span></div>
+          <div class="pixel-durability-bar"><div class="pixel-durability-fill" id="tooltip-dur-fill"></div></div>
+        </div>
+        <div class="tooltip-desc" id="tooltip-desc">Description text here.</div>
+      </div>
+
+      <!-- Death Screen Overlay -->
+      <div id="death-modal" class="modal-overlay death-overlay">
+        <div class="pixel-dialog death-dialog">
+          <h1 class="death-title">YOU DIED</h1>
+          <p class="death-cause" id="death-cause-text">Succumbed to mysterious forces</p>
+          <div class="death-actions">
+            <button id="btn-respawn" class="pixel-btn pixel-btn-danger pixel-btn-large">RESPAWN</button>
+            <button id="btn-death-menu" class="pixel-btn pixel-btn-secondary pixel-btn-large">MAIN MENU</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- In-Game Pause Menu Overlay (ESC Key) -->
+      <div id="pause-modal" class="modal-overlay pause-overlay">
+        <div class="pixel-dialog pause-dialog">
+          <h1 class="pixel-title">MINICRAFT</h1>
+          <div class="pixel-subtitle">GAME PAUSED</div>
+          <div class="pause-actions">
+            <button id="btn-pause-resume" class="pixel-btn pixel-btn-large">RESUME GAME</button>
+            <button id="btn-pause-save" class="pixel-btn pixel-btn-large">SAVE WORLD</button>
+            <button id="btn-pause-settings" class="pixel-btn pixel-btn-large">SETTINGS</button>
+            <button id="btn-pause-seed" class="pixel-btn pixel-btn-large">WORLD SEED</button>
+            <button id="btn-pause-main-menu" class="pixel-btn pixel-btn-danger pixel-btn-large">MAIN MENU</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================================= -->
+      <!-- MINICRAFT MAIN MENU (TOP HALF OF REFERENCE IMAGE) -->
+      <!-- ========================================================= -->
+      <div id="start-screen" class="modal-overlay active main-menu-overlay">
+        <div class="main-menu-container">
+          <!-- 3D Stone + Grass MINICRAFT Logo Header with Tilted Yellow BETA Badge -->
+          <div class="minicraft-brand-header">
+            <div class="minicraft-logo-wrapper">
+              <div class="minicraft-stone-logo" id="minicraft-logo">
+                <div class="logo-grass-overlay"></div>
+                <div class="logo-text-layer" aria-label="MINICRAFT">MINICRAFT</div>
+              </div>
+              <div class="beta-badge" id="menu-beta-badge">BETA</div>
+            </div>
+          </div>
+
+          <!-- 4 Classic Vertically Stacked Voxel Rectangular Buttons -->
+          <div class="main-menu-buttons">
+            <button id="btn-menu-play" class="pixel-btn menu-nav-btn">Play</button>
+            <button id="btn-menu-achievements" class="pixel-btn menu-nav-btn">Achievements</button>
+            <button id="btn-menu-settings" class="pixel-btn menu-nav-btn">Settings</button>
+            <button id="btn-menu-store" class="pixel-btn menu-nav-btn">Store</button>
+          </div>
+
+          <!-- Studio branding watermark -->
+          <div class="main-menu-watermark">
+            <span>MINICRAFT Beta • MINI COMPANY STUDIO</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================================= -->
+      <!-- SUB-SCREEN: SELECT WORLD (PLAY) -->
+      <!-- ========================================================= -->
+      <div id="world-select-modal" class="modal-overlay">
+        <div class="pixel-dialog world-select-dialog">
+          <div class="pixel-dialog-header">
+            <span class="pixel-dialog-title">MINICRAFT WORLDS</span>
+            <button id="btn-close-world-select" class="pixel-btn-close">&times;</button>
+          </div>
+          
+          <!-- Folder Sync & Storage Toolbar -->
+          <div class="world-storage-toolbar">
+            <button id="btn-sync-folder" class="pixel-btn pixel-btn-small" title="Link a physical 'MINICRAFT Worlds' folder on your computer">
+              📁 LINK WORLDS FOLDER
+            </button>
+            <button id="btn-import-world" class="pixel-btn pixel-btn-small" title="Import a .json or .minicraft world save file">
+              📥 IMPORT WORLD
+            </button>
+            <input type="file" id="input-import-world" accept=".json,.minicraft" style="display: none;" />
+            <span id="folder-status-badge" class="folder-status-badge">IndexedDB Active</span>
+          </div>
+
+          <div class="world-select-body">
+            <!-- Saved Worlds List Container -->
+            <div id="saved-worlds-list" class="saved-worlds-list"></div>
+
+            <!-- Create New World Options -->
+            <div class="create-world-box">
+              <div class="create-world-header">CREATE NEW WORLD</div>
+              <div class="world-name-row">
+                <input type="text" id="input-world-name" class="world-name-input" placeholder="World name..." value="New Survival World" />
+              </div>
+              <div class="seed-input-row" style="margin-top: 4px;">
+                <input type="text" id="input-seed" class="seed-input" placeholder="Enter custom seed..." value="Minicraft-Seed-1" />
+                <button id="btn-random-seed" class="pixel-btn pixel-btn-small" title="Generate Random Seed">RANDOM</button>
+              </div>
+              <button id="btn-create-new-world" class="pixel-btn pixel-btn-success pixel-btn-large" style="width: 100%; margin-top: 6px;">
+                CREATE NEW WORLD
+              </button>
+            </div>
+          </div>
+          <div class="pixel-dialog-footer world-select-footer">
+            <button id="btn-back-from-world-select" class="pixel-btn pixel-btn-large">BACK TO MENU</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================================= -->
+      <!-- SUB-SCREEN: ACHIEVEMENTS -->
+      <!-- ========================================================= -->
+      <div id="achievements-modal" class="modal-overlay">
+        <div class="pixel-dialog achievements-dialog">
+          <div class="pixel-dialog-header">
+            <span class="pixel-dialog-title">🏆 ACHIEVEMENTS (<span id="achieve-unlocked-count">0</span>/10)</span>
+            <button id="btn-close-achievements" class="pixel-btn-close">&times;</button>
+          </div>
+          <div class="achievements-list-container" id="achievements-list-container">
+            <!-- Dynamic achievement items rendered here -->
+          </div>
+          <div class="pixel-dialog-footer">
+            <button id="btn-back-from-achievements" class="pixel-btn pixel-btn-large">BACK TO MENU</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================================= -->
+      <!-- SUB-SCREEN: SETTINGS & OPTIONS -->
+      <!-- ========================================================= -->
+      <div id="settings-modal" class="modal-overlay">
+        <div class="pixel-dialog settings-dialog">
+          <div class="pixel-dialog-header">
+            <span class="pixel-dialog-title">SETTINGS &amp; OPTIONS</span>
+            <button id="btn-close-settings" class="pixel-btn-close">&times;</button>
+          </div>
+          <div class="settings-body-grid">
+            <div class="setting-item">
+              <div class="setting-label-row">
+                <span>Master Volume</span>
+                <span id="val-setting-volume" class="setting-val-badge">80%</span>
+              </div>
+              <input type="range" id="setting-volume" min="0" max="100" value="80" class="pixel-slider" />
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-label-row">
+                <span>Mouse Sensitivity</span>
+                <span id="val-setting-sens" class="setting-val-badge">1.0x</span>
+              </div>
+              <input type="range" id="setting-sens" min="40" max="250" value="100" class="pixel-slider" />
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-label-row">
+                <span>Field of View (FOV)</span>
+                <span id="val-setting-fov" class="setting-val-badge">75°</span>
+              </div>
+              <input type="range" id="setting-fov" min="60" max="95" value="75" class="pixel-slider" />
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-label-row">
+                <span>Render Distance</span>
+                <span id="val-setting-render-dist" class="setting-val-badge">6 Chunks</span>
+              </div>
+              <input type="range" id="setting-render-dist" min="4" max="12" value="6" class="pixel-slider" />
+            </div>
+
+            <div class="setting-buttons-row">
+              <button id="btn-toggle-graphics" class="pixel-btn">Graphics: FANCY</button>
+              <button id="btn-toggle-fullscreen" class="pixel-btn">Toggle Fullscreen</button>
+            </div>
+          </div>
+          <div class="pixel-dialog-footer">
+            <button id="btn-back-from-settings" class="pixel-btn pixel-btn-large">DONE</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================================= -->
+      <!-- SUB-SCREEN: STORE (PREVIEWS & SKINS) -->
+      <!-- ========================================================= -->
+      <div id="store-modal" class="modal-overlay">
+        <div class="pixel-dialog store-dialog">
+          <div class="pixel-dialog-header">
+            <span class="pixel-dialog-title">MINICRAFT STORE</span>
+            <button id="btn-close-store" class="pixel-btn-close">&times;</button>
+          </div>
+          <div class="store-notice-banner">
+            ✨ FREE COMMUNITY SKINS &amp; COSMETICS (BETA PREVIEW)
+          </div>
+          <div class="store-items-grid">
+            <div class="store-card active">
+              <div class="store-card-badge">ACTIVE</div>
+              <div class="store-card-icon">🧑</div>
+              <div class="store-card-name">Classic Miner</div>
+              <div class="store-card-desc">Original survival explorer outfit</div>
+              <button class="pixel-btn pixel-btn-small" disabled>EQUIPPED</button>
+            </div>
+            <div class="store-card">
+              <div class="store-card-icon">🌲</div>
+              <div class="store-card-name">Forest Ranger</div>
+              <div class="store-card-desc">Camouflage vest &amp; woodland boots</div>
+              <button class="pixel-btn pixel-btn-small btn-select-skin" data-skin="ranger">SELECT</button>
+            </div>
+            <div class="store-card">
+              <div class="store-card-icon">⛏️</div>
+              <div class="store-card-name">Deep Caver</div>
+              <div class="store-card-desc">Hard hat with luminous headlamp</div>
+              <button class="pixel-btn pixel-btn-small btn-select-skin" data-skin="caver">SELECT</button>
+            </div>
+            <div class="store-card">
+              <div class="store-card-icon">💎</div>
+              <div class="store-card-name">Crystal Knight</div>
+              <div class="store-card-desc">Radiant crystal plated armor</div>
+              <button class="pixel-btn pixel-btn-small btn-select-skin" data-skin="knight">SELECT</button>
+            </div>
+          </div>
+          <div class="pixel-dialog-footer">
+            <button id="btn-back-from-store" class="pixel-btn pixel-btn-large">BACK TO MENU</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================================= -->
+      <!-- RENAME WORLD DIALOG -->
+      <!-- ========================================================= -->
+      <div id="rename-world-modal" class="modal-overlay">
+        <div class="pixel-dialog rename-dialog">
+          <div class="pixel-dialog-header">
+            <span class="pixel-dialog-title">RENAME WORLD</span>
+          </div>
+          <div class="rename-input-box" style="padding: 10px 0;">
+            <input type="text" id="input-rename-world" class="world-name-input" placeholder="New world name..." />
+          </div>
+          <div class="confirm-actions-row">
+            <button id="btn-confirm-rename-world" class="pixel-btn pixel-btn-success pixel-btn-large">SAVE NAME</button>
+            <button id="btn-cancel-rename-world" class="pixel-btn pixel-btn-large">CANCEL</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================================= -->
+      <!-- DELETE WORLD CONFIRMATION DIALOG -->
+      <!-- ========================================================= -->
+      <div id="delete-confirm-modal" class="modal-overlay">
+        <div class="pixel-dialog confirm-dialog">
+          <div class="pixel-dialog-header">
+            <span class="pixel-dialog-title">DELETE WORLD?</span>
+          </div>
+          <p class="confirm-message" id="delete-confirm-msg">Are you sure you want to delete this saved world? All progress, placed blocks, and items will be permanently erased!</p>
+          <div class="confirm-actions-row">
+            <button id="btn-confirm-delete-world" class="pixel-btn pixel-btn-danger pixel-btn-large">DELETE</button>
+            <button id="btn-cancel-delete-world" class="pixel-btn pixel-btn-large">CANCEL</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- In-Game Saving Indicator HUD -->
+      <div id="saving-indicator" class="pixel-saving-indicator" style="display: none;">
+        <span class="save-icon-pulse">💾</span> SAVING WORLD...
+      </div>
+    </div>
+
+    <!-- Script Entry -->
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

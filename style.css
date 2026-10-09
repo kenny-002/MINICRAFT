@@ -1,0 +1,1867 @@
+/* ============================================================
+   BLOCKWORLD V5.2 — COMPLETE CLASSIC PIXEL-VOXEL UI STYLESHEET
+   Unified Classic Pixel-Art Voxel Survival Aesthetic
+   Visual Consistency & Pixel Perfection
+   ============================================================ */
+
+/* ============================================================
+   1. GLOBAL PIXEL UI & DESIGN SYSTEM TOKENS
+   ============================================================ */
+:root {
+  /* Classic Stone & Charcoal Palette */
+  --bg-dark-opaque: rgba(14, 15, 18, 0.94);
+  --panel-bg: #c6c6c6;
+  --panel-dark: #373737;
+  --panel-light: #ffffff;
+  --panel-border: #111111;
+
+  --slot-bg: #8b8b8b;
+  --slot-inner-shadow: #373737;
+  --slot-inner-light: #ffffff;
+  --slot-border: #181818;
+  --slot-selected-border: #ffffff;
+  --slot-hover-bg: #9e9e9e;
+
+  /* Accent & State Colors */
+  --pixel-gold: #f59e0b;
+  --pixel-red: #dc2626;
+  --pixel-green: #16a34a;
+  --pixel-amber: #d97706;
+
+  /* Typography */
+  --font-pixel: 'Silkscreen', 'Press Start 2P', monospace;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --text-main: #1f2937;
+  --text-white: #ffffff;
+  --text-dim: #4b5563;
+  --text-shadow-dark: #111111;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #000000;
+  font-family: var(--font-pixel);
+  color: var(--text-white);
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+#game-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+#ui-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* ============================================================
+   2. REUSABLE PIXEL COMPONENTS (.pixel-dialog, .pixel-btn, .pixel-slot)
+   ============================================================ */
+
+/* Reusable Classic Gray Stone Pixel Dialog */
+.pixel-dialog {
+  background: var(--panel-bg);
+  border: 3px solid var(--panel-border);
+  box-shadow:
+    inset 3px 3px 0 var(--panel-light),
+    inset -3px -3px 0 var(--panel-dark),
+    0 8px 0 rgba(0, 0, 0, 0.6);
+  padding: 12px;
+  color: #222222;
+  font-family: var(--font-pixel);
+  pointer-events: auto;
+  position: relative;
+}
+
+.pixel-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--panel-dark);
+}
+
+.pixel-dialog-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #262626;
+  letter-spacing: 0.5px;
+}
+
+.dialog-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pixel-dialog-footer {
+  margin-top: 10px;
+  padding-top: 6px;
+  border-top: 2px solid var(--panel-dark);
+  font-size: 9px;
+  color: #444444;
+  text-align: center;
+}
+
+.pixel-dialog-footer kbd {
+  background: #2b2b2b;
+  color: #ffffff;
+  padding: 1px 4px;
+  border: 1px solid #111111;
+  font-family: var(--font-pixel);
+  font-size: 8px;
+}
+
+/* Reusable Classic Pixel Button */
+.pixel-btn {
+  background: #c6c6c6;
+  border: 2px solid #111111;
+  box-shadow:
+    inset 2px 2px 0 #ffffff,
+    inset -2px -2px 0 #555555;
+  color: #111111;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  padding: 6px 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: none;
+}
+
+.pixel-btn:hover {
+  background: #d4d4d4;
+  box-shadow:
+    inset 2px 2px 0 #ffffff,
+    inset -2px -2px 0 #333333;
+}
+
+.pixel-btn:active {
+  background: #a8a8a8;
+  box-shadow:
+    inset 2px 2px 0 #333333,
+    inset -2px -2px 0 #ffffff;
+  transform: translate(1px, 1px);
+}
+
+.pixel-btn.disabled, .pixel-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #888888;
+  color: #444444;
+}
+
+.pixel-btn-small {
+  padding: 3px 8px;
+  font-size: 9px;
+}
+
+.pixel-btn-large {
+  padding: 10px 18px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.pixel-btn-success {
+  background: #22c55e;
+  color: #ffffff;
+  box-shadow:
+    inset 2px 2px 0 #86efac,
+    inset -2px -2px 0 #15803d;
+}
+
+.pixel-btn-success:hover {
+  background: #16a34a;
+}
+
+.pixel-btn-success:active {
+  background: #15803d;
+  box-shadow:
+    inset 2px 2px 0 #15803d,
+    inset -2px -2px 0 #86efac;
+}
+
+.pixel-btn-danger {
+  background: #dc2626;
+  color: #ffffff;
+  box-shadow:
+    inset 2px 2px 0 #fca5a5,
+    inset -2px -2px 0 #991b1b;
+}
+
+.pixel-btn-danger:hover {
+  background: #b91c1c;
+}
+
+.pixel-btn-danger:active {
+  background: #991b1b;
+  box-shadow:
+    inset 2px 2px 0 #991b1b,
+    inset -2px -2px 0 #fca5a5;
+}
+
+.pixel-btn-secondary {
+  background: #71717a;
+  color: #ffffff;
+  box-shadow:
+    inset 2px 2px 0 #a1a1aa,
+    inset -2px -2px 0 #3f3f46;
+}
+
+.pixel-btn-close {
+  background: #dc2626;
+  border: 2px solid #111111;
+  box-shadow:
+    inset 2px 2px 0 #fca5a5,
+    inset -2px -2px 0 #7f1d1d;
+  color: #ffffff;
+  width: 22px;
+  height: 22px;
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.pixel-btn-close:hover {
+  background: #ef4444;
+}
+
+/* ============================================================
+   3. PERFECT SQUARE PIXEL INVENTORY SLOTS
+   ============================================================ */
+.pixel-slot, .hotbar-slot {
+  width: 44px;
+  height: 44px;
+  background: var(--slot-bg);
+  border: 2px solid var(--slot-border);
+  box-shadow:
+    inset 2px 2px 0 var(--slot-inner-shadow),
+    inset -2px -2px 0 var(--slot-inner-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  image-rendering: pixelated;
+}
+
+.pixel-slot:hover, .hotbar-slot:hover {
+  background: var(--slot-hover-bg);
+}
+
+.pixel-slot.selected, .pixel-slot.active, .hotbar-slot.active {
+  box-shadow:
+    inset 2px 2px 0 #ffffff,
+    inset -2px -2px 0 #ffffff,
+    inset 4px 4px 0 #111111,
+    inset -4px -4px 0 #111111;
+  border-color: #ffffff;
+}
+
+.pixel-slot .slot-icon-img, .hotbar-slot .slot-icon-img {
+  width: 32px;
+  height: 32px;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+.pixel-slot .slot-count, .hotbar-slot .slot-count {
+  position: absolute;
+  right: 3px;
+  bottom: 2px;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow:
+    1px 1px 0 #000,
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    0 1px 0 #000,
+    1px 0 0 #000;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.pixel-slot .durability-bar, .hotbar-slot .durability-bar {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 3px;
+  height: 3px;
+  background: #111111;
+  border: 1px solid #000000;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.pixel-slot .durability-fill, .hotbar-slot .durability-fill {
+  height: 100%;
+  background: #22c55e;
+}
+
+.pixel-slot .durability-fill.med, .hotbar-slot .durability-fill.med {
+  background: #f59e0b;
+}
+
+.pixel-slot .durability-fill.low, .hotbar-slot .durability-fill.low {
+  background: #ef4444;
+}
+
+.pixel-slot .slot-key, .hotbar-slot .slot-key {
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  color: #cccccc;
+  text-shadow: 1px 1px 0 #000;
+  pointer-events: none;
+}
+
+.slot-placeholder {
+  font-size: 8px;
+  color: #555555;
+  text-align: center;
+  font-family: var(--font-pixel);
+  pointer-events: none;
+}
+
+/* Grids */
+.pixel-slots-grid {
+  display: grid;
+  gap: 3px;
+}
+
+.grid-9x3 {
+  grid-template-columns: repeat(9, 44px);
+  grid-template-rows: repeat(3, 44px);
+}
+
+.grid-9x1 {
+  grid-template-columns: repeat(9, 44px);
+}
+
+.inv-section-title {
+  font-size: 9px;
+  color: #373737;
+  font-weight: 700;
+  margin: 8px 0 4px 0;
+  letter-spacing: 0.5px;
+}
+
+.inv-section-title.hotbar-title {
+  margin-top: 10px;
+}
+
+/* ============================================================
+   4. CROSSHAIR & MINING PROGRESS
+   ============================================================ */
+#crosshair-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 12;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#crosshair {
+  position: relative;
+  width: 16px;
+  height: 16px;
+}
+
+.ch-center {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  width: 2px;
+  height: 2px;
+  background: #ffffff;
+  box-shadow: 0 0 1px #000;
+}
+
+.ch-top {
+  position: absolute;
+  top: 1px;
+  left: 7px;
+  width: 2px;
+  height: 5px;
+  background: #ffffff;
+  box-shadow: 0 0 1px #000;
+}
+
+.ch-bottom {
+  position: absolute;
+  bottom: 1px;
+  left: 7px;
+  width: 2px;
+  height: 5px;
+  background: #ffffff;
+  box-shadow: 0 0 1px #000;
+}
+
+.ch-left {
+  position: absolute;
+  top: 7px;
+  left: 1px;
+  width: 5px;
+  height: 2px;
+  background: #ffffff;
+  box-shadow: 0 0 1px #000;
+}
+
+.ch-right {
+  position: absolute;
+  top: 7px;
+  right: 1px;
+  width: 5px;
+  height: 2px;
+  background: #ffffff;
+  box-shadow: 0 0 1px #000;
+}
+
+#mining-progress-container {
+  width: 36px;
+  height: 4px;
+  background: #18181b;
+  border: 1px solid #111111;
+  margin-top: 12px;
+  overflow: hidden;
+  display: none;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.7);
+}
+
+#mining-progress-bar {
+  width: 0%;
+  height: 100%;
+  background: #f59e0b;
+}
+
+/* Hurt Flash Overlay */
+#hurt-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(220, 38, 38, 0.4);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.1s ease-out;
+  z-index: 15;
+}
+
+#hurt-overlay.flash {
+  opacity: 1;
+}
+
+/* ============================================================
+   5. MAIN GAME HUD (Vitals Hearts, Hunger, XP Bar, Hotbar)
+   ============================================================ */
+#survival-hud {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  pointer-events: auto;
+  z-index: 11;
+}
+
+#hud-vitals-container {
+  display: flex;
+  justify-content: space-between;
+  width: 420px;
+  padding: 0 4px;
+}
+
+.vitals-row {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.pixel-heart, .pixel-food-unit {
+  width: 18px;
+  height: 18px;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+}
+
+/* Thin XP Bar */
+#hud-xp-container {
+  width: 420px;
+}
+
+.hud-xp-track {
+  width: 100%;
+  height: 5px;
+  background: #111111;
+  border: 1px solid #222222;
+  box-shadow: inset 1px 1px 0 #000000;
+  overflow: hidden;
+}
+
+.hud-xp-fill {
+  height: 100%;
+  background: #22c55e;
+  box-shadow: inset 0 1px 0 #86efac;
+}
+
+/* Hotbar HUD */
+#hotbar-container {
+  background: var(--panel-bg);
+  border: 3px solid var(--panel-border);
+  box-shadow:
+    inset 2px 2px 0 var(--panel-light),
+    inset -2px -2px 0 var(--panel-dark),
+    0 4px 0 rgba(0, 0, 0, 0.6);
+  padding: 3px;
+}
+
+.hotbar-slots-grid {
+  display: flex;
+  gap: 3px;
+}
+
+/* ============================================================
+   6. IN-WORLD FARMING TOOLTIP
+   ============================================================ */
+.pixel-farming-tooltip {
+  position: absolute;
+  top: calc(50% + 24px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(20, 21, 27, 0.95);
+  border: 2px solid #4b5563;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.6);
+  color: #ffffff;
+  padding: 4px 8px;
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  pointer-events: none;
+  z-index: 12;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   7. INVENTORY MODAL (4 Armor + 3D Player + 2x2 Crafting + 36 Slots)
+   ============================================================ */
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.65);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.modal-overlay.active {
+  display: flex !important;
+  pointer-events: auto;
+}
+
+.inventory-dialog {
+  width: 480px;
+}
+
+.inv-top-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  background: #b0b0b0;
+  border: 2px solid #373737;
+  padding: 8px;
+  box-shadow: inset 1px 1px 0 #ffffff;
+}
+
+/* Armor Column */
+.armor-column {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.armor-column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 8px;
+  font-weight: 700;
+  color: #333333;
+}
+
+.defense-badge {
+  background: #1e293b;
+  color: #38bdf8;
+  padding: 1px 4px;
+  border: 1px solid #0f172a;
+  font-size: 8px;
+}
+
+.armor-slots-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.armor-slot {
+  background: #7a7a7a;
+}
+
+/* 3D Player Character Preview Box */
+.player-preview-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.player-preview-inner {
+  width: 140px;
+  height: 190px;
+  background: #18181b;
+  border: 2px solid #111111;
+  box-shadow:
+    inset 2px 2px 0 #09090b,
+    inset -2px -2px 0 #27272a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.player-preview-label {
+  font-size: 8px;
+  color: #444444;
+  margin-top: 2px;
+  font-weight: 700;
+}
+
+/* 2x2 Field Crafting Box */
+.field-crafting-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.field-crafting-header {
+  font-size: 9px;
+  font-weight: 700;
+  color: #333333;
+  margin-bottom: 4px;
+}
+
+.field-crafting-body {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.field-crafting-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 44px);
+  grid-template-rows: repeat(2, 44px);
+  gap: 3px;
+}
+
+.crafting-arrow-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pixel-craft-arrow {
+  font-size: 16px;
+  color: #333333;
+  font-weight: 700;
+}
+
+.field-crafting-output .craft-out-slot {
+  width: 44px;
+  height: 44px;
+}
+
+/* ============================================================
+   8. WORKBENCH CRAFTING BENCH MODAL
+   ============================================================ */
+.crafting-dialog {
+  width: 520px;
+}
+
+.crafting-workbench-banner {
+  background: #3b82f6;
+  color: #ffffff;
+  padding: 4px 8px;
+  border: 2px solid #1e3a8a;
+  font-size: 9px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.crafting-category-tabs {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 8px;
+}
+
+.pixel-tab {
+  background: #a8a8a8;
+  border: 2px solid #111111;
+  box-shadow:
+    inset 2px 2px 0 #ffffff,
+    inset -2px -2px 0 #555555;
+  color: #222222;
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.pixel-tab.active {
+  background: #ffffff;
+  box-shadow:
+    inset 2px 2px 0 #ffffff,
+    inset -2px -2px 0 #aaaaaa;
+}
+
+.recipe-list-container {
+  max-height: 240px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #9e9e9e;
+  border: 2px solid #373737;
+  padding: 6px;
+  box-shadow: inset 1px 1px 0 #111111;
+}
+
+.recipe-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #c6c6c6;
+  border: 2px solid #111111;
+  padding: 4px 8px;
+  box-shadow: inset 1px 1px 0 #ffffff;
+}
+
+.recipe-card.craftable {
+  background: #d4d4d4;
+  border-color: #16a34a;
+}
+
+.recipe-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recipe-info .slot-icon-img {
+  width: 28px;
+  height: 28px;
+}
+
+.recipe-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: #111111;
+}
+
+.recipe-reqs {
+  display: flex;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.req-badge {
+  font-size: 8px;
+  padding: 1px 4px;
+  border: 1px solid #111111;
+  background: #2b2b2b;
+}
+
+.req-badge.has-item {
+  color: #86efac;
+}
+
+.req-badge.missing-item {
+  color: #fca5a5;
+}
+
+.btn-craft {
+  background: #16a34a;
+  color: #ffffff;
+  border: 2px solid #111111;
+  box-shadow:
+    inset 2px 2px 0 #86efac,
+    inset -2px -2px 0 #14532d;
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.btn-craft:hover:not(:disabled) {
+  background: #22c55e;
+}
+
+.btn-craft:active:not(:disabled) {
+  background: #15803d;
+  box-shadow:
+    inset 2px 2px 0 #14532d,
+    inset -2px -2px 0 #86efac;
+  transform: translate(1px, 1px);
+}
+
+.btn-craft:disabled {
+  background: #71717a;
+  color: #3f3f46;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ============================================================
+   9. SMELTER & KILN MODAL
+   ============================================================ */
+.smelter-dialog {
+  width: 480px;
+}
+
+.smelter-furnace-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: #b0b0b0;
+  border: 2px solid #373737;
+  padding: 12px;
+  margin-bottom: 8px;
+  box-shadow: inset 1px 1px 0 #ffffff;
+}
+
+.smelter-inputs-col, .smelter-outputs-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.smelter-slot-label {
+  font-size: 8px;
+  font-weight: 700;
+  color: #333333;
+}
+
+.smelter-flame-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.pixel-flame-canvas {
+  width: 24px;
+  height: 24px;
+  image-rendering: pixelated;
+}
+
+.pixel-flame-track {
+  width: 16px;
+  height: 4px;
+  background: #18181b;
+  border: 1px solid #111111;
+  overflow: hidden;
+}
+
+.pixel-flame-fill {
+  width: 100%;
+  background: #f97316;
+}
+
+.smelter-arrow-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.pixel-smelt-arrow {
+  font-size: 18px;
+  color: #333333;
+  font-weight: 700;
+}
+
+.pixel-progress-track {
+  width: 32px;
+  height: 6px;
+  background: #18181b;
+  border: 1px solid #111111;
+  overflow: hidden;
+}
+
+.pixel-progress-fill {
+  height: 100%;
+  background: #ffffff;
+}
+
+.smelter-slot.output-slot {
+  width: 44px;
+  height: 44px;
+}
+
+/* ============================================================
+   10. STORAGE CHEST MODAL
+   ============================================================ */
+.chest-dialog {
+  width: 480px;
+}
+
+/* ============================================================
+   11. FLOATING CURSOR HELD ITEM STACK
+   ============================================================ */
+.cursor-item-float {
+  position: fixed;
+  pointer-events: none;
+  z-index: 100;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+}
+
+.cursor-item-img {
+  width: 32px;
+  height: 32px;
+  image-rendering: pixelated;
+}
+
+.cursor-item-count {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow:
+    1px 1px 0 #000,
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000;
+}
+
+/* ============================================================
+   12. PIXEL ITEM HOVER TOOLTIP
+   ============================================================ */
+.pixel-tooltip {
+  position: fixed;
+  background: #14151b;
+  border: 2px solid #525464;
+  box-shadow:
+    inset 1px 1px 0 #6b7280,
+    inset -1px -1px 0 #0f1015,
+    0 6px 0 rgba(0, 0, 0, 0.7);
+  padding: 8px 10px;
+  pointer-events: none;
+  z-index: 90;
+  font-family: var(--font-pixel);
+  max-width: 240px;
+}
+
+.tooltip-header {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 3px;
+}
+
+.tooltip-meta {
+  display: flex;
+  gap: 6px;
+  font-size: 8px;
+  color: #9ca3af;
+  margin-bottom: 4px;
+}
+
+.tooltip-tier {
+  color: #38bdf8;
+}
+
+.tooltip-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 9px;
+  color: #e5e7eb;
+  margin-bottom: 4px;
+}
+
+.tooltip-durability {
+  font-size: 8px;
+  color: #9ca3af;
+  margin-bottom: 4px;
+}
+
+.pixel-durability-bar {
+  width: 100%;
+  height: 4px;
+  background: #111111;
+  border: 1px solid #333333;
+  margin-top: 2px;
+  overflow: hidden;
+}
+
+.pixel-durability-fill {
+  height: 100%;
+  background: #22c55e;
+}
+
+.tooltip-desc {
+  font-size: 8px;
+  color: #9ca3af;
+  border-top: 1px solid #333333;
+  padding-top: 4px;
+}
+
+/* ============================================================
+   13. PIXEL TOAST NOTIFICATION
+   ============================================================ */
+.pixel-toast {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #18181b;
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.8);
+  color: #ffffff;
+  padding: 6px 14px;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.1s linear;
+  z-index: 50;
+  white-space: nowrap;
+}
+
+.pixel-toast.show {
+  opacity: 1;
+}
+
+/* ============================================================
+   14. DEATH SCREEN & PAUSE MENU & START MENU
+   ============================================================ */
+.death-dialog {
+  width: 380px;
+  text-align: center;
+  background: #262626;
+  color: #ffffff;
+  border-color: #991b1b;
+  box-shadow:
+    inset 3px 3px 0 #dc2626,
+    inset -3px -3px 0 #450a0a,
+    0 10px 0 rgba(0, 0, 0, 0.8);
+}
+
+.death-title {
+  font-size: 24px;
+  color: #ef4444;
+  margin-bottom: 8px;
+  text-shadow: 2px 2px 0 #000;
+}
+
+.death-cause {
+  font-size: 10px;
+  color: #fca5a5;
+  margin-bottom: 16px;
+}
+
+.death-actions, .pause-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pause-dialog {
+  width: 360px;
+  text-align: center;
+}
+
+.pixel-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111111;
+  margin-bottom: 2px;
+}
+
+.pixel-subtitle {
+  font-size: 9px;
+  color: #4b5563;
+  margin-bottom: 14px;
+  letter-spacing: 1px;
+}
+
+/* ============================================================
+   14. RED MINI COMPANY STARTUP SPLASH SCREEN
+   ============================================================ */
+.splash-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #d61827;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  transition: opacity 0.5s ease-out;
+  pointer-events: auto;
+  user-select: none;
+}
+
+.splash-screen.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.splash-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  animation: splashZoomIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes splashZoomIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.mini-company-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mini-company-title {
+  font-family: 'Silkscreen', 'Press Start 2P', sans-serif;
+  font-size: 38px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.splash-subtitle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 14px;
+  margin-top: 14px;
+  text-transform: uppercase;
+  padding-left: 14px; /* Counteract trailing letter spacing */
+  opacity: 0.95;
+}
+
+.splash-skip-hint {
+  position: absolute;
+  bottom: 24px;
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 1px;
+}
+
+/* ============================================================
+   15. MINICRAFT 3D LOGO & MAIN MENU (REFERENCE TOP HALF)
+   ============================================================ */
+.main-menu-overlay {
+  background: transparent !important; /* Allow 3D live panorama background */
+  display: none;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.main-menu-overlay.active {
+  display: flex !important;
+  pointer-events: auto;
+}
+
+.main-menu-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 600px;
+  padding: 20px;
+}
+
+.minicraft-brand-header {
+  position: relative;
+  margin-bottom: 28px;
+  display: flex;
+  justify-content: center;
+}
+
+.minicraft-logo-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* Stone + Grass 3D MINICRAFT Logo */
+.minicraft-stone-logo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  filter: drop-shadow(0 10px 0 rgba(0, 0, 0, 0.75));
+}
+
+.logo-text-layer {
+  font-family: 'Press Start 2P', 'Silkscreen', monospace;
+  font-size: 46px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: #e5e5e5;
+  background: linear-gradient(180deg, #f0f0f0 0%, #d4d4d4 30%, #a3a3a3 70%, #737373 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+  z-index: 2;
+  text-shadow:
+    0 1px 0 #ffffff,
+    0 2px 0 #cccccc,
+    0 3px 0 #b3b3b3,
+    0 4px 0 #999999,
+    0 5px 0 #808080,
+    0 6px 0 #666666,
+    0 7px 0 #4d4d4d,
+    0 8px 0 #333333,
+    0 9px 0 #1a1a1a,
+    -2px -2px 0 #111,
+    2px -2px 0 #111,
+    -2px 2px 0 #111,
+    2px 2px 0 #111,
+    0 -3px 0 #111,
+    0 3px 0 #111,
+    -3px 0 0 #111,
+    3px 0 0 #111;
+}
+
+/* Grass Top Layer on Logo */
+.logo-grass-overlay {
+  position: absolute;
+  top: -6px;
+  left: 0;
+  width: 100%;
+  height: 18px;
+  background: linear-gradient(180deg, #4ade80 0%, #22c55e 50%, #15803d 100%);
+  border-top: 3px solid #86efac;
+  border-bottom: 2px solid #14532d;
+  box-shadow: 0 3px 0 #111111;
+  clip-path: polygon(
+    0% 0%, 100% 0%, 100% 70%,
+    95% 85%, 90% 60%, 85% 95%, 80% 65%, 75% 90%, 70% 60%,
+    65% 95%, 60% 70%, 55% 90%, 50% 65%, 45% 95%, 40% 70%,
+    35% 90%, 30% 60%, 25% 95%, 20% 65%, 15% 90%, 10% 60%,
+    5% 95%, 0% 70%
+  );
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Tilted Yellow BETA Badge */
+.beta-badge {
+  position: absolute;
+  right: -24px;
+  bottom: -8px;
+  background: #facc15;
+  color: #000000;
+  border: 2px solid #000000;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  font-weight: 900;
+  padding: 4px 8px;
+  transform: rotate(-14deg);
+  box-shadow: 2px 2px 0 #000000;
+  text-shadow: 1px 1px 0 #fef08a;
+  animation: betaPulse 2s ease-in-out infinite alternate;
+  z-index: 10;
+}
+
+@keyframes betaPulse {
+  0% {
+    transform: rotate(-14deg) scale(1);
+  }
+  100% {
+    transform: rotate(-12deg) scale(1.08);
+  }
+}
+
+/* 4 Vertically Stacked Voxel Menu Buttons */
+.main-menu-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 340px;
+  margin-bottom: 20px;
+}
+
+.menu-nav-btn {
+  width: 100%;
+  height: 46px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  background: #c6c6c6;
+  border: 3px solid #111111;
+  box-shadow:
+    inset 3px 3px 0 #ffffff,
+    inset -3px -3px 0 #555555,
+    0 4px 0 rgba(0, 0, 0, 0.7);
+  color: #1a1a1a;
+  text-shadow: 1px 1px 0 #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s, transform 0.05s;
+}
+
+.menu-nav-btn:hover {
+  background: #dbdbdb;
+  box-shadow:
+    inset 3px 3px 0 #ffffff,
+    inset -3px -3px 0 #666666,
+    0 4px 0 rgba(0, 0, 0, 0.7),
+    0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+.menu-nav-btn:active {
+  background: #a8a8a8;
+  box-shadow:
+    inset 3px 3px 0 #555555,
+    inset -3px -3px 0 #ffffff;
+  transform: translateY(2px);
+}
+
+.main-menu-watermark {
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 1px 1px 0 #000000, -1px -1px 0 #000000, 1px -1px 0 #000000, -1px 1px 0 #000000;
+  letter-spacing: 0.5px;
+}
+
+/* ============================================================
+   16. SUB-SCREENS (WORLD SELECT, ACHIEVEMENTS, SETTINGS, STORE)
+   ============================================================ */
+/* World Select Modal */
+.world-select-dialog {
+  width: 600px;
+}
+
+.world-storage-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #2a2a2a;
+  border: 2px solid #111111;
+  padding: 6px 8px;
+  margin-bottom: 8px;
+  gap: 8px;
+}
+
+.folder-status-badge {
+  font-size: 8px;
+  font-family: var(--font-pixel);
+  background: #14532d;
+  color: #86efac;
+  padding: 3px 6px;
+  border: 1px solid #166534;
+  white-space: nowrap;
+}
+
+.folder-status-badge.synced {
+  background: #1e3a8a;
+  color: #93c5fd;
+  border-color: #2563eb;
+}
+
+.saved-worlds-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 220px;
+  overflow-y: auto;
+  background: #a3a3a3;
+  border: 2px solid #373737;
+  padding: 8px;
+  box-shadow: inset 2px 2px 0 #555555;
+}
+
+.world-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #c6c6c6;
+  border: 2px solid #111111;
+  padding: 8px 10px;
+  box-shadow: inset 1px 1px 0 #ffffff, inset -1px -1px 0 #555555;
+}
+
+.world-card.active-world {
+  border-color: #22c55e;
+  box-shadow: inset 2px 2px 0 #86efac, inset -2px -2px 0 #15803d;
+}
+
+.world-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.world-card-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #111111;
+}
+
+.world-card-meta {
+  font-size: 8px;
+  color: #3f3f46;
+}
+
+.world-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.world-name-input {
+  width: 100%;
+  background: #18181b;
+  color: #ffffff;
+  border: 2px solid #3f3f46;
+  padding: 6px 8px;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  box-shadow: inset 2px 2px 0 #09090b;
+}
+
+.world-name-input:focus {
+  outline: none;
+  border-color: #22c55e;
+}
+
+.create-world-box {
+  background: #b0b0b0;
+  border: 2px solid #373737;
+  padding: 10px;
+}
+
+.create-world-header {
+  font-size: 9px;
+  font-weight: 700;
+  color: #111111;
+  margin-bottom: 6px;
+}
+
+.rename-dialog {
+  width: 380px;
+}
+
+/* In-Game Saving Indicator */
+.pixel-saving-indicator {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: rgba(17, 17, 17, 0.85);
+  border: 2px solid #38bdf8;
+  color: #e0f2fe;
+  padding: 6px 12px;
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  z-index: 100;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  animation: savePulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes savePulse {
+  0% { opacity: 0.8; }
+  100% { opacity: 1.0; }
+}
+
+/* Achievements Dialog */
+.achievements-dialog {
+  width: 560px;
+}
+
+.achievements-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 320px;
+  overflow-y: auto;
+  background: #a3a3a3;
+  border: 2px solid #373737;
+  padding: 8px;
+  box-shadow: inset 2px 2px 0 #555555;
+}
+
+.achievement-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #c6c6c6;
+  border: 2px solid #111111;
+  padding: 8px 10px;
+  box-shadow: inset 1px 1px 0 #ffffff, inset -1px -1px 0 #555555;
+}
+
+.achievement-card.unlocked {
+  background: #dcfce7;
+  border-color: #16a34a;
+}
+
+.achievement-icon {
+  font-size: 24px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e4e4e7;
+  border: 2px solid #111111;
+}
+
+.achievement-details {
+  flex: 1;
+}
+
+.achievement-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: #111111;
+}
+
+.achievement-desc {
+  font-size: 8px;
+  color: #4b5563;
+  margin-top: 2px;
+}
+
+.achievement-badge {
+  font-size: 8px;
+  font-weight: 700;
+  padding: 3px 6px;
+  border: 1px solid #111111;
+  background: #71717a;
+  color: #ffffff;
+}
+
+.achievement-badge.unlocked {
+  background: #16a34a;
+}
+
+/* Settings Dialog */
+.settings-dialog {
+  width: 480px;
+}
+
+.settings-body-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #b0b0b0;
+  border: 2px solid #373737;
+  padding: 12px;
+}
+
+.setting-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.setting-label-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  font-weight: 700;
+  color: #111111;
+}
+
+.setting-val-badge {
+  color: #1d4ed8;
+}
+
+.pixel-slider {
+  width: 100%;
+  accent-color: #16a34a;
+  cursor: pointer;
+}
+
+.setting-buttons-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.setting-buttons-row .pixel-btn {
+  flex: 1;
+}
+
+/* Store Dialog */
+.store-dialog {
+  width: 540px;
+}
+
+.store-notice-banner {
+  background: #1e293b;
+  color: #facc15;
+  border: 2px solid #0f172a;
+  padding: 6px;
+  font-size: 8px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.store-items-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.store-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #b0b0b0;
+  border: 2px solid #111111;
+  padding: 12px;
+  text-align: center;
+  box-shadow: inset 1px 1px 0 #ffffff, inset -1px -1px 0 #555555;
+}
+
+.store-card.active {
+  border-color: #16a34a;
+  background: #dcfce7;
+}
+
+.store-card-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 7px;
+  font-weight: 700;
+  background: #16a34a;
+  color: #ffffff;
+  padding: 2px 4px;
+  border: 1px solid #111111;
+}
+
+.store-card-icon {
+  font-size: 32px;
+  margin-bottom: 6px;
+}
+
+.store-card-name {
+  font-size: 10px;
+  font-weight: 700;
+  color: #111111;
+}
+
+.store-card-desc {
+  font-size: 8px;
+  color: #4b5563;
+  margin: 4px 0 8px 0;
+}
+
+/* Confirm Dialog */
+.confirm-dialog {
+  width: 360px;
+  text-align: center;
+  background: #262626;
+  color: #ffffff;
+  border-color: #dc2626;
+}
+
+.confirm-message {
+  font-size: 9px;
+  color: #fca5a5;
+  margin: 12px 0 16px 0;
+  line-height: 1.4;
+}
+
+.confirm-actions-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.confirm-actions-row .pixel-btn {
+  flex: 1;
+}
+
+/* ============================================================
+   15. F3 DEVELOPER TELEMETRY HUD
+   ============================================================ */
+.pixel-debug-panel {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(18, 18, 24, 0.92);
+  border: 2px solid #374151;
+  color: #f3f4f6;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 8px 12px;
+  pointer-events: none;
+  z-index: 15;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.6);
+}
+
+.debug-title {
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  font-weight: 700;
+  color: #38bdf8;
+  margin-bottom: 4px;
+}
+
+.debug-row {
+  margin: 2px 0;
+}
+
+.debug-divider {
+  border: none;
+  border-top: 1px solid #374151;
+  margin: 4px 0;
+}
+
+.val-fps {
+  color: #4ade80;
+  font-weight: 700;
+}
+
+.val-biome {
+  color: #fbbf24;
+  font-weight: 700;
+}
+
+/* ============================================================
+   17. RESPONSIVE DESIGN SCALING
+   ============================================================ */
+@media (max-width: 768px) {
+  .inventory-dialog, .crafting-dialog, .smelter-dialog, .chest-dialog,
+  .death-dialog, .pause-dialog, .world-select-dialog, .achievements-dialog,
+  .settings-dialog, .store-dialog, .confirm-dialog {
+    transform: scale(0.85);
+    transform-origin: center center;
+  }
+
+  .minicraft-stone-logo .logo-text-layer {
+    font-size: 36px;
+  }
+
+  #survival-hud {
+    transform: translateX(-50%) scale(0.85);
+    transform-origin: bottom center;
+  }
+}
+
+@media (max-width: 480px) {
+  .inventory-dialog, .crafting-dialog, .smelter-dialog, .chest-dialog,
+  .death-dialog, .pause-dialog, .world-select-dialog, .achievements-dialog,
+  .settings-dialog, .store-dialog, .confirm-dialog {
+    transform: scale(0.72);
+  }
+
+  .minicraft-stone-logo .logo-text-layer {
+    font-size: 28px;
+  }
+
+  .main-menu-buttons {
+    max-width: 260px;
+  }
+
+  #survival-hud {
+    transform: translateX(-50%) scale(0.72);
+  }
+}
